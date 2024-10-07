@@ -131,6 +131,3 @@ And now you can easily reference pushed value onto the stack with the current ba
 When your function is done, you should remove any values from the stack, restore the stack pointer, pop the old base pointer into %ebp, and return (ret).
 
 Note the return and exit registers [here](#x86-registers).
-
-
-as --32 power.s -o ./bin/power.a && ld -m elf_i386 ./bin/power.a -o ./bin/power
