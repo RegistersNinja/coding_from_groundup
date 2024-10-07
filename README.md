@@ -2,6 +2,9 @@
 - [x86 Architecture](#x86-architecture)
   - [Addressing Modes](#addressing-modes)
   - [x86 registers](#x86-registers)
+  - [Basic operations](#basic-operations)
+  - [Functions, the stack, calling conventions](#functions-the-stack-calling-conventions)
+    - [Functions](#functions)
 
 # Introduction
 In this repo I host my notes for **Programming From Ground Up** by **Jonathan Bartlett**. It has been released as an open source book and can be found here: 
@@ -35,7 +38,7 @@ Notes:
 AT&T form for address reference:
 
         ADDRESS_OR_OFFSET(%BASE_OR_OFFSET,%INDEX,MULTIPLIER)
-        FINAL ADDRESS = ADDRESS_OR_OFFSET + %BASE_OR_OFFSET + MULTIPLIER * %INDEX
+        FINAL_ADDRESS = ADDRESS_OR_OFFSET + %BASE_OR_OFFSET + MULTIPLIER * %INDEX
 
 * Direct addressing mode:
 
@@ -62,8 +65,8 @@ AT&T form for address reference:
 
 ## x86 registers
 General purpose:
-* %eax
-* %ebx
+* %eax - return value
+* %ebx - exit status code
 * %ecx
 * %edx
 * %edi
@@ -75,3 +78,59 @@ Special:
 * %eip - next instruction pointer
 * %eflags - flags like zero, negative etc.
 
+## Basic operations
+A good quick reference for x86_32 can be found here:
+https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html
+
+Here is the quickest primer:
+1. mov - moves value from one place to another
+2. inc,dec - subtracts/adds 1 to a specified place
+3. mull - multiplies 2 numbers
+4. push/pop - pushes/pop value onto/from stack
+5. jmp, j[condition] - jmp unconditionally jumps to a specified label, whereas adding a condition jumps based on eflags registry. Condition suffix can be: e =, ne !=, z 0, g >, ge >=, l <, le <=.
+
+Assembly loop:
+
+        <label_start_loop>:
+        cmp <stop condition>, <iterator register, usually %ecx>
+        je <label_end_loop>
+        {loop body}
+        jmp <label_start_loop>
+
+        <label_end_loop>
+
+## Functions, the stack, calling conventions
+Resources: 
+There are many good ones', I will list here the ones' I would revisit if I needed a refresher.
+1. A great channel, and especially great introduction to this topic (probably covers the entire section and possibly more) - https://www.youtube.com/watch?v=ZXoW5iqbFJE.
+2. To debug an assembly program I use x86dbg if I have to (unfortunately) use Windows, or edb for linux that can be found here:
+https://github.com/eteran/edb-debugger. These programs are great for **stack and register visualization** and should be used often.
+3. Calling conventions - the idea is that when function/program is finished executing, someone has to cleanup the stack (i.e return it to it's previous state). A popular convention used by **gcc** is **cdecl** by which a caller is always responsible for the stack. See here:
+https://en.wikipedia.org/wiki/X86_calling_conventions
+
+### Functions
+Function definition can be as simple as
+
+        <label>:
+        {function body}
+
+To invoke a function simply use **call** <label>. Note: **call** pushes return address onto the stack, where as **jmp** (and its' siblings) doesn't. Essentially other than that, they do the same thing.
+
+To properly utilize functions you have to set up the stack in the beginning with essential operations.
+
+        push %ebp
+        mov %esp, %ebp
+
+This sets up the stack such that it's easy to distinguish between different stack frames (for example the caller and the current functions). So it looks like this:
+
+        [Caller Stack Frame]
+        [Return Address]
+        [Old Base Pointer] <--- %esp, %ebp
+And now you can easily reference pushed value onto the stack with the current base pointer (they would start at 4(%ebp)). 
+
+When your function is done, you should remove any values from the stack, restore the stack pointer, pop the old base pointer into %ebp, and return (ret).
+
+Note the return and exit registers [here](#x86-registers).
+
+
+as --32 power.s -o ./bin/power.a && ld -m elf_i386 ./bin/power.a -o ./bin/power
