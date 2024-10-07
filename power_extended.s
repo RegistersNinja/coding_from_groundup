@@ -6,15 +6,15 @@
 
 _start:
 #push the variables (base and power) on to the stack
-pushl $3 # base
-pushl $2 # power
+pushl $3 # power
+pushl $2 # base
 call power # returns to eax
 
 addl $8, %esp
 pushl %eax # push the result onto the stack
 
-pushl $2
-pushl $5
+pushl $0 #power
+pushl $2 #base
 call power
 addl $8, %esp
 popl %ebx
@@ -38,6 +38,10 @@ movl 8(%ebp), %ebx
 movl 12(%ebp), %ecx
 movl %ebx, -4(%ebp)
 
+# handle power 0
+cmpl $0, %ecx
+je power_zero
+
 power_loop_start:
 cmpl $1, %ecx
 je  end_power
@@ -53,4 +57,8 @@ movl %ebp, %esp
 popl %ebp
 ret
 
-
+power_zero:
+movl $1, %eax
+movl %ebp, %esp
+popl %ebp
+ret
