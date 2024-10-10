@@ -1,10 +1,14 @@
 - [Introduction](#introduction)
-- [x86 Architecture](#x86-architecture)
+- [x86 Assembly](#x86-assembly)
   - [Addressing Modes](#addressing-modes)
   - [x86 registers](#x86-registers)
   - [Basic operations](#basic-operations)
   - [Functions, the stack, calling conventions](#functions-the-stack-calling-conventions)
     - [Functions](#functions)
+  - [Arguments, files, .bss](#arguments-files-bss)
+    - [Arguments](#arguments)
+    - [Files](#files)
+    - [.bss and more](#bss-and-more)
 
 # Introduction
 In this repo I host my notes for **Programming From Ground Up** by **Jonathan Bartlett**. It has been released as an open source book and can be found here: 
@@ -22,7 +26,7 @@ Side notes:
    https://github.com/Sivnerof/Programming-From-The-Ground-Up?tab=readme-ov-file
 
 
-# x86 Architecture
+# x86 Assembly
 Notes:
 1. The order of the topics is linear with the chapters (more or less), but I don't bother numbering them.
 2. In AT&T syntax % means indirect operand, and $ means immediate operand. AT&T and NASM handle memory references differently.
@@ -64,6 +68,9 @@ AT&T form for address reference:
         mov ebx, [eax+4]
 
 ## x86 registers
+Note: they have similar names and distinguishing between them in the sea of code can be confusing. It is useful however to practice and remember most of them. A good reference, as well as schematics for different register parts can be found here:
+https://www.tutorialspoint.com/assembly_programming/assembly_registers.htm
+
 General purpose:
 * %eax - return value
 * %ebx - exit status code
@@ -131,3 +138,35 @@ And now you can easily reference pushed value onto the stack with the current ba
 When your function is done, you should remove any values from the stack, restore the stack pointer, pop the old base pointer into %ebp, and return (ret).
 
 Note the return and exit registers [here](#x86-registers).
+
+
+## Arguments, files, .bss
+### Arguments
+When you run your program, particularly through a shell with arguments, the stack is heavily involved. Say you run something like 
+```
+./prog arg1 arg2
+```
+
+The top of the stack would look like this:
+        etc...
+        arg1
+[argv]  program name
+        argc <--- %esp
+
+### Files
+To open files you have to set up the registers in the following way and make a sys-call:
+
+* %eax - holds the system call to open a file which is 5.
+* %ebx - holds the **address** of the **path** to the file.
+* %ecx - this register holds values for flags. You should take a look at https://man7.org/linux/man-pages/man2/open.2.html. To get the numbers you can consult /usr/include/bits/fcntl.h. The author cites 0 for reading and 03101 for writing.
+* %edx - stores the permissions set. These are used for creating a file if doesn't exist, i.e 0666.
+
+After `int $0x80`, the `fd` is returned to %eax. `fd` or file descriptor is a complex topic within Linux kernel that is worth exploring on it's own. A detailed breakdown can be found here: https://biriukov.dev/docs/fd-pipe-session-terminal/1-file-descriptor-and-open-file-description/.
+
+Next you can use this `fd` you get back and read/write to it, or use it somehow. You go through the same process of setting up the registers and calling a kernel through interrupt. 
+https://en.wikibooks.org/wiki/X86_Assembly/Interfacing_with_Linux
+https://syscalls32.paolostivanin.com/
+
+### .bss and more
+
+

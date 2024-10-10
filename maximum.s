@@ -1,3 +1,6 @@
+# as --32 maximum.s -o ./bin/maximum.a && ld -m elf_i386 ./bin/maximum.a -o ./bin/maximum && rm ./bin/maximum.a
+
+
 # %edi - the iterator
 # %ebx - the current max
 # %eax - current data item

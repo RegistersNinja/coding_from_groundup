@@ -1,4 +1,5 @@
-# as --32 square.s -o ./bin/square.a && ld -m elf_i386 ./bin/square.a -o ./bin/square
+# as --32 square.s -o ./bin/square.a && ld -m elf_i386 ./bin/square.a -o ./bin/square && rm ./bin/square.a
+
 
 .section .data
 
@@ -20,4 +21,3 @@ square:
     movl %ebp, %esp      
     popl %ebp            
     ret 
-    

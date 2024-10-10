@@ -1,3 +1,6 @@
+# as --32 power_extended.s -o ./bin/power_extended.a && ld -m elf_i386 ./bin/power_extended.a -o ./bin/power_extended && rm ./bin/power_extended.a
+
+
 .section .data
 
 .section .text

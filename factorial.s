@@ -1,4 +1,4 @@
-# as --32 factorial.s -o ./bin/factorial.a && ld -m elf_i386 ./bin/factorial.a -o ./bin/factorial
+# as --32 factorial.s -o ./bin/factorial.a && ld -m elf_i386 ./bin/factorial.a -o ./bin/factorial && rm ./bin/factorial.a
 
 .section .data
 .section .text
