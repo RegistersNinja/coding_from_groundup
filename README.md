@@ -9,6 +9,8 @@
     - [Arguments](#arguments)
     - [Files](#files)
     - [.bss and more](#bss-and-more)
+    - [Notes on chapter 6](#notes-on-chapter-6)
+  - [The end - for now](#the-end---for-now)
 
 # Introduction
 In this repo I host my notes for **Programming From Ground Up** by **Jonathan Bartlett**. It has been released as an open source book and can be found here: 
@@ -96,6 +98,7 @@ Here is the quickest primer:
 4. push/pop - pushes/pop value onto/from stack
 5. jmp, j[condition] - jmp unconditionally jumps to a specified label, whereas adding a condition jumps based on eflags registry. Condition suffix can be: e =, ne !=, z 0, g >, ge >=, l <, le <=.
 
+.equ - somewhat similar to #def in C.
 Assembly loop:
 
         <label_start_loop>:
@@ -130,9 +133,10 @@ To properly utilize functions you have to set up the stack in the beginning with
 
 This sets up the stack such that it's easy to distinguish between different stack frames (for example the caller and the current functions). So it looks like this:
 
-        [Caller Stack Frame]
-        [Return Address]
         [Old Base Pointer] <--- %esp, %ebp
+        [Return Address]
+        [Caller Stack Frame]
+   
 And now you can easily reference pushed value onto the stack with the current base pointer (they would start at 4(%ebp)). 
 
 When your function is done, you should remove any values from the stack, restore the stack pointer, pop the old base pointer into %ebp, and return (ret).
@@ -148,10 +152,19 @@ When you run your program, particularly through a shell with arguments, the stac
 ```
 
 The top of the stack would look like this:
-        etc...
+```
+[               lower addresses         ]
+
+        argc = 3 <--- %esp
+     ...arg2   
         arg1
-[argv]  program name
-        argc <--- %esp
+        [argv]  program name
+        00000000
+
+[               higher addresses         ]
+```
+Note that %ebp starts zeroed out (like most other registers), which means, it doesn't point to a stack location unless a frame is defined.
+
 
 ### Files
 To open files you have to set up the registers in the following way and make a sys-call:
@@ -168,5 +181,22 @@ https://en.wikibooks.org/wiki/X86_Assembly/Interfacing_with_Linux
 https://syscalls32.paolostivanin.com/
 
 ### .bss and more
+This is a very good opportunity to mention the structure of an executable, as well as memory regions - in this case in the context of ELF (Executable Linkable File). This format is used in a linux environment as opposed to PE (Portable Executable) used in Windows.
 
+Skipping the header (which you can dive in for a long time - see libelf) here are main constructs of such executable:
+* .text - holds the instructions to execute
+* .data, .rdata - initialized static data 
+* .bss - uninitialized static data
+* heap - dynamically allocated (allocated at runtime) and grows toward higher memory addresses ↓
+* stack - local variables, function parameters, return addresses, and grows toward lower memory addresses ↑
 
+The .bss segment is allocated at program load time and initialized to zero by the operating system. Note that unlike .data section that is part of an executable, .bss section is set up at runtime.
+
+### Notes on chapter 6
+Just as the author says - everything here is straightforward, however there are couple of interesting points worth investigating.
+1. linux.s and record-def.s - these files resemble in their function header files in C, and then basically .include assembly directive is resolved during linking.
+2. read and write record - these functions were defined in a separate files and called within different programs, like write-records.s that calls write-record function. Of note that write-record has to be globally defined and also in the same directory (or relative path specified otherwise?).
+3. In essence none of this is meaningfully different from C programming, except that you have to plan out and setup your registers, and also manage the stack.
+
+## The end - for now
+Since I don't intent to develop, chapters 7-8 are irrelevant for now, and the rest is either dated or optional for now as well. Seems like a good breaking point to move on.
