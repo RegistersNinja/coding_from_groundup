@@ -1,4 +1,5 @@
-- [Introduction](#introduction)
+- [Programming From the ground up](#programming-from-the-ground-up)
+  - [Disclamer](#disclamer)
 - [x86 Assembly](#x86-assembly)
   - [Addressing Modes](#addressing-modes)
   - [x86 registers](#x86-registers)
@@ -12,7 +13,10 @@
     - [Notes on chapter 6](#notes-on-chapter-6)
   - [The end - for now](#the-end---for-now)
 
-# Introduction
+# Programming From the ground up
+## Disclamer
+These are my personal notes and summaries based on Programming from the ground up by Jonathan Bartlett. They are intended for educational and personal use only. The content of the book, including any excerpts or ideas, belongs to the author and their respective copyright holders. I encourage you to purchase the book here: https://www.amazon.com/Programming-Ground-Up-Jonathan-Bartlett/dp/1616100648 to support the author and gain a deeper understanding of the material. Alternatively you can download the book as an open source with the link down below. 
+
 In this repo I host my notes for **Programming From Ground Up** by **Jonathan Bartlett**. It has been released as an open source book and can be found here: 
 https://download-mirror.savannah.gnu.org/releases/pgubook/ProgrammingGroundUp-1-0-booksize.pdf.
 
